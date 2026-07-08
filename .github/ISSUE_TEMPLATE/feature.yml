@@ -1,0 +1,25 @@
+name: Tool request
+description: Suggest a tool to add to the library
+labels: ["tool-request"]
+body:
+  - type: input
+    id: tool
+    attributes:
+      label: Tool
+      description: Name and link to the upstream project.
+    validations:
+      required: true
+  - type: textarea
+    id: complete
+    attributes:
+      label: What "complete" means for this tool
+      description: What a full deploy includes (frontend, backend, first-run config) so verify.sh can prove it works.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it belongs here
+      description: This library stays small. Why is this one worth running?
+    validations:
+      required: false

@@ -1,0 +1,3 @@
+source: soc-stack@3961765c34d00672e64d72c33373e2e230cf11ca
+libs: logging secrets idempotency network preflight lxc (json-out.sh hand-maintained)
+rebrand: SOC_ -> LL_

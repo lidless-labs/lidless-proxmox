@@ -1,0 +1,9 @@
+# local scratch
+*.log
+*.tmp
+/dist/
+/.DS_Store
+
+# never commit real secrets/state pulled from a host
+/var/
+lidless-*.json

@@ -1,0 +1,31 @@
+name: Bug report
+description: A tool install or the orchestrator misbehaved
+labels: ["bug"]
+body:
+  - type: input
+    id: tool
+    attributes:
+      label: Tool
+      description: Which tool (e.g. adguard), or "orchestrator/bootstrap".
+    validations:
+      required: true
+  - type: input
+    id: pve
+    attributes:
+      label: Proxmox VE version
+      placeholder: "pveversion output"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The command you ran and what went wrong. Redact secrets and use RFC 5737 IPs.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: false

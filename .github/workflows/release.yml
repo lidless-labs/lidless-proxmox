@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build + publish pinned tarball
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag / bootstrap version must match
+        run: |
+          set -e
+          tag="${GITHUB_REF_NAME}"
+          baked="$(grep -oE 'VERSION="\$\{LL_VERSION:-[^}]+\}"' bootstrap.sh | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+')"
+          if [[ "${baked}" != "${tag}" ]]; then
+            echo "bootstrap.sh VERSION (${baked}) does not match tag (${tag})." >&2
+            echo "Bump the VERSION default in bootstrap.sh in the commit you tag." >&2
+            exit 1
+          fi
+
+      - name: Build tarball + checksum
+        run: |
+          set -e
+          tag="${GITHUB_REF_NAME}"
+          name="lidless-proxmox-${tag}"
+          stage="${RUNNER_TEMP}/${name}"
+          mkdir -p "${stage}"
+          # Ship the runtime surface only. No tests/CI/docs in the install tree.
+          cp -a bootstrap.sh lib tools LICENSE README.md "${stage}/"
+          rm -f "${stage}/tools/sync-engine.sh"   # dev-only, never shipped
+          ( cd "${RUNNER_TEMP}" && tar -czf "${name}.tar.gz" "${name}" )
+          ( cd "${RUNNER_TEMP}" && sha256sum "${name}.tar.gz" > "${name}.tar.gz.sha256" )
+          echo "ASSET_DIR=${RUNNER_TEMP}" >> "${GITHUB_ENV}"
+          echo "ASSET_NAME=${name}" >> "${GITHUB_ENV}"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.ASSET_DIR }}/${{ env.ASSET_NAME }}.tar.gz
+            ${{ env.ASSET_DIR }}/${{ env.ASSET_NAME }}.tar.gz.sha256
+          generate_release_notes: true

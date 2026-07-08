@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# pre-push: block push if content-guard finds blocking violations.
+# Scans tracked files in the repo against policies/public-repo.json.
+# (Tracked-only scan — untracked working-tree files are out of scope.)
+# Bypass only if you know what you're doing: git push --no-verify
+set -euo pipefail
+
+CONTENT_GUARD_DIR="${CONTENT_GUARD_DIR:-$HOME/repos/content-guard}"
+POLICY="${CONTENT_GUARD_POLICY:-$CONTENT_GUARD_DIR/policies/public-repo.json}"
+
+if [[ ! -d "$CONTENT_GUARD_DIR/src/content_guard" ]]; then
+  echo "pre-push: content-guard not found at $CONTENT_GUARD_DIR" >&2
+  echo "pre-push: clone https://github.com/solomonneas/content-guard or set CONTENT_GUARD_DIR" >&2
+  exit 1
+fi
+
+if [[ ! -f "$POLICY" ]]; then
+  echo "pre-push: policy file not found: $POLICY" >&2
+  exit 1
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+echo "pre-push: scanning tracked files against $(basename "$POLICY")"
+
+if ! PYTHONPATH="$CONTENT_GUARD_DIR/src" python3 -m content_guard.git_scan --all-tracked --policy "$POLICY"; then
+  echo >&2
+  echo "pre-push: BLOCKED. content-guard found violations in tracked files." >&2
+  echo "pre-push:" >&2
+  echo "pre-push: To resolve:" >&2
+  echo "pre-push:   1. Fix the leak in the offending file, OR" >&2
+  echo "pre-push:   2. Add an inline allow tag on the offending line:" >&2
+  echo "pre-push:        <!-- content-guard: allow <rule-id> -->" >&2
+  echo "pre-push:      or for the whole file (add near the top):" >&2
+  echo "pre-push:        <!-- content-guard: allow <rule-id> file -->" >&2
+  echo "pre-push:" >&2
+  echo "pre-push: Bypass only if you know what you are doing: git push --no-verify" >&2
+  exit 1
+fi

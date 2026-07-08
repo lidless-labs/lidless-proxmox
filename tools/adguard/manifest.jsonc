@@ -1,0 +1,18 @@
+{
+  // AdGuard Home - network-wide DNS ad/tracker blocker.
+  // Deployed fully configured: admin user set, DNS on 53, web UI on 80,
+  // DoH upstream. No interactive :3000 first-run wizard left dangling.
+  "name": "adguard",
+  "display_name": "AdGuard Home",
+  "description": "Network-wide DNS ad and tracker blocker with DoH/DoT upstreams, configured on first boot.",
+  "provides": ["adguard_url", "adguard_admin_user", "adguard_admin_password"],
+  "presets": {
+    "minimal":  { "ram_mb": 512,  "disk_gb": 4, "cores": 1 },
+    "standard": { "ram_mb": 1024, "disk_gb": 8, "cores": 2 }
+  },
+  // 3000 is only the un-automated setup wizard; we skip it, so it is not exposed.
+  "ports": [53, 80],
+  "template_pattern": "debian-12-standard",
+  "unprivileged": true,
+  "pinned": { "adguard_version": "v0.107.52" }
+}

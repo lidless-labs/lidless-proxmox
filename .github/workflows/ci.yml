@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+    paths-ignore: ["docs/**", "**/*.md", "LICENSE", ".gitignore"]
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+    paths-ignore: ["docs/**", "**/*.md", "LICENSE", ".gitignore"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+      - name: Shellcheck all bash
+        run: |
+          shellcheck --severity=warning bootstrap.sh
+          shellcheck --severity=warning lib/*.sh
+          shellcheck --severity=warning tools/*.sh
+          shellcheck --severity=warning tools/*/*.sh
+
+  unit-tests:
+    name: Bats unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install jq
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq jq
+      - name: Run bats
+        run: ./tests/unit/run.sh
+
+  manifest-schema:
+    name: Tool manifest validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install jq
+        run: sudo apt-get install -y -qq jq
+      - name: Every tool manifest is parseable JSON with the required keys
+        run: |
+          set -e
+          for m in tools/*/manifest.jsonc; do
+            echo "checking ${m}"
+            sed 's://.*$::g' "${m}" | jq -e .name >/dev/null
+            sed 's://.*$::g' "${m}" | jq -e .presets >/dev/null
+            sed 's://.*$::g' "${m}" | jq -e '.presets.standard.ram_mb' >/dev/null
+          done
+
+  # Tier-2 functional smoke on a self-hosted Proxmox runner (real pct create +
+  # verify.sh gate) is added in Phase 3. Until then CI is lint + mocked unit.
