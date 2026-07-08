@@ -1,0 +1,17 @@
+{
+  // scratch - a throwaway LXC for smoke-testing and ad-hoc poking.
+  // Not a normal installer tool (no install.sh pushed into the guest); it is
+  // driven host-side by scratch.sh. The manifest just supplies default sizing
+  // and the base template so it reads like every other tool.
+  "name": "scratch",
+  "display_name": "Scratch CT",
+  "description": "Throwaway Debian LXC in the smoke band for testing and ad-hoc commands.",
+  "provides": ["scratch_ip", "scratch_vmid"],
+  "presets": {
+    "minimal":  { "ram_mb": 512,  "disk_gb": 4, "cores": 1 },
+    "standard": { "ram_mb": 1024, "disk_gb": 8, "cores": 2 }
+  },
+  "ports": [],
+  "template_pattern": "debian-12-standard",
+  "unprivileged": true
+}

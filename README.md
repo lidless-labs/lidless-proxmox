@@ -63,8 +63,19 @@ LL_SMOKE=1 bash lib/deploy-one.sh adguard   # from a checkout on the host
 | Tool | What it deploys | Ports |
 |---|---|---|
 | `adguard` | AdGuard Home, fully configured (admin, DNS, web, DoH upstream) | 53, 80 |
+| `wazuh` | Wazuh single-node (manager, indexer, dashboard), admin password rotated | 443, 1514, 1515, 55000 |
+| `scratch` | Throwaway Debian LXC in the smoke band, for testing and ad-hoc commands | - |
 
-More tools (UniFi, LibreNMS, standalone Wazuh / TheHive / Cortex / MISP, a scratch-CT helper) land in later phases. Each is three files: see [docs/adding-a-tool.md](docs/adding-a-tool.md).
+More tools (UniFi, LibreNMS, standalone TheHive / Cortex / MISP) land in later phases. Each is three files: see [docs/adding-a-tool.md](docs/adding-a-tool.md).
+
+`scratch` is host-side (not a curl one-liner). Spin a throwaway container to poke at:
+
+```bash
+bash tools/scratch/scratch.sh --label probe --run 'uname -a'   # keeps the CT; reaper GCs later
+bash tools/scratch/scratch.sh --reap --run 'apt-get -v'        # destroys it when done
+```
+
+`tools/lidless-smoke-reaper.sh` is a cron GC that destroys anything aged in the 9000-9099 smoke band; production VMIDs are never touched.
 
 ## Configuration
 
