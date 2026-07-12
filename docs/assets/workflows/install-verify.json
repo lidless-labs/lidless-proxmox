@@ -1,0 +1,27 @@
+{
+  "kicker": "LIDLESS-PROXMOX · INSTALL VERIFY",
+  "title": "installed only counts after verify passes",
+  "subtitle": "The bootstrap verifies the release, the orchestrator creates the LXC, and each tool's own health check decides whether deployment is allowed to finish.",
+  "footer": "pinned fetch · manifest · install · verify gate",
+  "lanes": [
+    { "id": "trust", "label": "TRUST" },
+    { "id": "plan", "label": "PLAN" },
+    { "id": "deploy", "label": "DEPLOY" },
+    { "id": "gate", "label": "GATE" }
+  ],
+  "nodes": [
+    { "id": "bootstrap", "lane": "trust", "row": 0, "title": "bootstrap.sh", "meta": "pinned tag and sha256", "status": "source" },
+    { "id": "manifest", "lane": "plan", "row": 0, "title": "manifest.jsonc", "meta": "ports, presets, pins" },
+    { "id": "lxc", "lane": "deploy", "row": 0, "title": "create LXC", "meta": "bridge, storage, VMID" },
+    { "id": "install", "lane": "deploy", "row": 1, "title": "install.sh", "meta": "self-contained in guest" },
+    { "id": "verify", "lane": "gate", "row": 0, "title": "verify.sh", "meta": "service answers on real ports", "status": "focus" },
+    { "id": "result", "lane": "gate", "row": 1, "title": "deployed JSON", "meta": "only after health check", "status": "gate" }
+  ],
+  "edges": [
+    { "from": "bootstrap", "to": "manifest" },
+    { "from": "manifest", "to": "lxc" },
+    { "from": "lxc", "to": "install" },
+    { "from": "install", "to": "verify" },
+    { "from": "verify", "to": "result" }
+  ]
+}

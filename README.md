@@ -32,6 +32,10 @@ result JSON: /root/lidless-adguard.json  |  secrets: /var/lib/lidless/secrets/ad
 
 `lidless-proxmox` installs self-hosted tools into their own Proxmox LXC from a single command run on the host. Each tool ships three files (a resource manifest, an in-container installer, a health check), and a shared orchestrator sizes the container, runs the installer, then runs the health check as the last gate. The point of difference from the big community script library is the finish line: a tool is not "done" when its package installs, it is done when its `verify.sh` proves the real service answers. The installer libraries are pinned and checksum-verified, not curled live off a moving branch.
 
+![lidless-proxmox install and verify workflow: bootstrap verifies a pinned release, the manifest plans the LXC, install.sh runs inside the guest, and verify.sh gates the deployed JSON result](docs/assets/install-verify-workflow.svg)
+
+Generated from [`docs/assets/workflows/install-verify.json`](docs/assets/workflows/install-verify.json) with the [Lidless fleet-kit workflow renderer](https://github.com/lidless-labs/lidless-fleet-kit/tree/main/workflow).
+
 ## Install
 
 Nothing to install on the host beyond `curl`. Every tool is one command, run as root on the Proxmox VE host:
