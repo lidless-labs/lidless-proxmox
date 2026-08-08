@@ -17,5 +17,15 @@
   "default_creds": {
     "user": "admin",
     "password_rotate_on_install": true
+  },
+  "pinned": {
+    "wazuh_installer_version": "4.9.2",
+    "wazuh_installer_url": "https:\/\/packages.wazuh.com\/4.9\/wazuh-install.sh",
+    "wazuh_installer_sha256": "0cf8e370cdfdd8187af16bff2bd1fd09741c02eccc00c9458b6a814c7990decc",
+    "wazuh_installer_declared_version": "4.9.2",
+    "wazuh_installer_source_repository": "https:\/\/github.com\/wazuh\/wazuh-packages",
+    "wazuh_installer_release_url": "https:\/\/github.com\/wazuh\/wazuh-packages\/releases\/tag\/v4.9.2",
+    "wazuh_installer_capture_date": "2026-08-08",
+    "wazuh_installer_provenance_note": "Official v4.9.2 release has no assets; CDN script is mutable and pinned by SHA-256."
   }
 }
