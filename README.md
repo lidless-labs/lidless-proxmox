@@ -1,7 +1,3 @@
-<!-- TODO: banner art pending. Add docs/assets/lidless-proxmox-social-preview.jpg (2048x878, owl watercolor per ILLUSTRATION.md), then restore:
-<p align="center"><img src="docs/assets/lidless-proxmox-social-preview.jpg" width="900" alt="lidless-proxmox"></p>
--->
-
 <h1 align="center">lidless-proxmox</h1>
 
 <p align="center"><strong>Complete, one-command Proxmox LXC installers for the tools I actually run, each gated by a functional check so "installed" always means "works".</strong></p>
